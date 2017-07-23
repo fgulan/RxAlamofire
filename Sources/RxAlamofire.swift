@@ -113,7 +113,7 @@ public func requestData(_ method: Alamofire.HTTPMethod,
     parameters: [String: Any]? = nil,
     encoding: ParameterEncoding = URLEncoding.default,
     headers: [String: String]? = nil)
-    -> Observable<(HTTPURLResponse, Data)>
+    -> Observable<(response: HTTPURLResponse, data: Data)>
 {
     return SessionManager.default.rx.responseData(
         method,
@@ -131,7 +131,7 @@ public func requestData(_ method: Alamofire.HTTPMethod,
 
  - returns: An observable of a tuple containing `(NSHTTPURLResponse, NSData)`
  */
-public func requestData(_ urlRequest: URLRequestConvertible) -> Observable<(HTTPURLResponse, Data)> {
+public func requestData(_ urlRequest: URLRequestConvertible) -> Observable<(response: HTTPURLResponse, data: Data)> {
     return request(urlRequest).flatMap { $0.rx.responseData() }
 }
 
@@ -180,7 +180,7 @@ public func requestString(_ method: Alamofire.HTTPMethod,
     parameters: [String: Any]? = nil,
     encoding: ParameterEncoding = URLEncoding.default,
     headers: [String: String]? = nil)
-    -> Observable<(HTTPURLResponse, String)>
+    -> Observable<(response: HTTPURLResponse, data: String)>
 {
     return SessionManager.default.rx.responseString(
         method,
@@ -198,7 +198,7 @@ public func requestString(_ method: Alamofire.HTTPMethod,
 
  - returns: An observable of the tuple `(NSHTTPURLResponse, String)`
  */
-public func requestString(_ urlRequest: URLRequestConvertible) -> Observable<(HTTPURLResponse, String)> {
+public func requestString(_ urlRequest: URLRequestConvertible) -> Observable<(response: HTTPURLResponse, data: String)> {
     return request(urlRequest).flatMap { $0.rx.responseString() }
 }
 
@@ -247,7 +247,7 @@ public func requestJSON(_ method: Alamofire.HTTPMethod,
     parameters: [String: Any]? = nil,
     encoding: ParameterEncoding = URLEncoding.default,
     headers: [String: String]? = nil)
-    -> Observable<(HTTPURLResponse, Any)>
+    -> Observable<(response: HTTPURLResponse, data: Any)>
 {
     return SessionManager.default.rx.responseJSON(
         method,
@@ -265,7 +265,7 @@ public func requestJSON(_ method: Alamofire.HTTPMethod,
 
  - returns: An observable of the tuple `(NSHTTPURLResponse, AnyObject)`
  */
-public func requestJSON(_ urlRequest: URLRequestConvertible) -> Observable<(HTTPURLResponse, Any)> {
+public func requestJSON(_ urlRequest: URLRequestConvertible) -> Observable<(response: HTTPURLResponse, data: Any)> {
     return request(urlRequest).flatMap { $0.rx.responseJSON() }
 }
 
@@ -506,7 +506,7 @@ extension Reactive where Base: SessionManager {
         encoding: ParameterEncoding = URLEncoding.default,
         headers: [String: String]? = nil
     )
-        -> Observable<(HTTPURLResponse, Data)>
+        -> Observable<(response: HTTPURLResponse, data: Data)>
     {
         return request(
             method,
@@ -562,7 +562,7 @@ extension Reactive where Base: SessionManager {
         encoding: ParameterEncoding = URLEncoding.default,
         headers: [String: String]? = nil
     )
-        -> Observable<(HTTPURLResponse, String)>
+        -> Observable<(response: HTTPURLResponse, data: String)>
     {
         return request(
             method,
@@ -621,7 +621,7 @@ extension Reactive where Base: SessionManager {
         encoding: ParameterEncoding = URLEncoding.default,
         headers: [String: String]? = nil
     )
-        -> Observable<(HTTPURLResponse, Any)>
+        -> Observable<(response: HTTPURLResponse, data: Any)>
     {
         return request(method,
             url,
@@ -766,7 +766,7 @@ extension Reactive where Base: DataRequest {
      */
     public func responseResult<T: DataResponseSerializerProtocol>(queue: DispatchQueue? = nil,
         responseSerializer: T)
-        -> Observable<(HTTPURLResponse, T.SerializedObject)>
+        -> Observable<(response: HTTPURLResponse, data: T.SerializedObject)>
     {
         return Observable.create { observer in
             let dataRequest = self.base
@@ -774,7 +774,7 @@ extension Reactive where Base: DataRequest {
                 switch packedResponse.result {
                 case .success(let result):
                     if let httpResponse = packedResponse.response {
-                        observer.on(.next(httpResponse, result))
+                        observer.on(.next((httpResponse, result)))
                         observer.on(.completed)
                     }
                     else {
@@ -850,7 +850,7 @@ extension Reactive where Base: DataRequest {
 
     - returns: An instance of `Observable<NSData>`
     */
-    public func responseData() -> Observable<(HTTPURLResponse, Data)> {
+    public func responseData() -> Observable<(response: HTTPURLResponse, data: Data)> {
         return responseResult(responseSerializer: DataRequest.dataResponseSerializer())
     }
 
@@ -865,7 +865,7 @@ extension Reactive where Base: DataRequest {
 
     - returns: An instance of `Observable<String>`
     */
-    public func responseString(encoding: String.Encoding? = nil) -> Observable<(HTTPURLResponse, String)> {
+    public func responseString(encoding: String.Encoding? = nil) -> Observable<(response: HTTPURLResponse, data: String)> {
         return responseResult(responseSerializer: Base.stringResponseSerializer(encoding: encoding))
     }
 
@@ -880,7 +880,7 @@ extension Reactive where Base: DataRequest {
 
     - returns: An instance of `Observable<AnyObject>`
     */
-    public func responseJSON(options: JSONSerialization.ReadingOptions = .allowFragments) -> Observable<(HTTPURLResponse, Any)> {
+    public func responseJSON(options: JSONSerialization.ReadingOptions = .allowFragments) -> Observable<(response: HTTPURLResponse, data:  Any)> {
         return responseResult(responseSerializer: Base.jsonResponseSerializer(options: options))
     }
 
@@ -902,7 +902,7 @@ extension Reactive where Base: DataRequest {
 
     - returns: An instance of `Observable<AnyData>`
     */
-    public func responsePropertyList(options: PropertyListSerialization.ReadOptions = PropertyListSerialization.ReadOptions()) -> Observable<(HTTPURLResponse, Any)> {
+    public func responsePropertyList(options: PropertyListSerialization.ReadOptions = PropertyListSerialization.ReadOptions()) -> Observable<(response: HTTPURLResponse, data: Any)> {
         return responseResult(responseSerializer: Base.propertyListResponseSerializer(options: options))
     }
 
