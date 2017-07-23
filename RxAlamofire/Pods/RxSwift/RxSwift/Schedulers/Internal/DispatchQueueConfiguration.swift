@@ -6,8 +6,8 @@
 //  Copyright © 2016 Krunoslav Zaher. All rights reserved.
 //
 
-import Foundation
 import Dispatch
+import struct Foundation.TimeInterval
 
 struct DispatchQueueConfiguration {
     let queue: DispatchQueue
@@ -43,7 +43,7 @@ extension DispatchQueueConfiguration {
         let compositeDisposable = CompositeDisposable()
 
         let timer = DispatchSource.makeTimerSource(queue: queue)
-        timer.scheduleOneshot(deadline: deadline)
+        timer.scheduleOneshot(deadline: deadline, leeway: leeway)
 
         // TODO:
         // This looks horrible, and yes, it is.
